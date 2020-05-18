@@ -1,6 +1,7 @@
 use serde::Deserialize;
 use uuid::Uuid;
 
+#[derive(Clone, Debug)]
 struct Name(String);
 
 impl Name {
@@ -13,6 +14,7 @@ impl Name {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct Island {
     pub id: Uuid,
     owner_id: Uuid,
