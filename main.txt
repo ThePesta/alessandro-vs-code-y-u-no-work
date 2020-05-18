@@ -1,0 +1,18 @@
+// Suggestion: Can you live-code a program counts words in a text file
+// and writes the result in a SQL database?
+
+use std::{env, fs};
+
+fn main() {
+    let file_name: Vec<String> = env::args().collect();
+    let file_name = file_name.get(1)
+        .map(|file_name| file_name.trim())
+        .expect("Filename argument is missing");
+
+    let contents = fs::read_to_string(file_name)
+        .expect("Something went wrong reading the file");
+
+    let split_contents = contents.split_whitespace().fold(0, |total, _| total + 1);
+
+    println!("Number of words: {}", split_contents);
+}
