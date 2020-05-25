@@ -10,3 +10,19 @@ services:
     environment:
       POSTGRES_PASSWORD: test
       POSTGRES_DB: not-mongodb
+
+  # adminer:                                                                              
+  #   depends_on:                                                                         
+  #     - pg                                                                              
+  #   image: adminer                                                                      
+  #   restart: always                                                                     
+  #   ports:                                                                              
+  #     - 9999:8080   
+
+  pg_admin:                                                                             
+    image: dpage/pgadmin4                                                               
+    ports:                                                                              
+      - 9999:80                                                                         
+    environment:                                                                        
+      PGADMIN_DEFAULT_EMAIL: test@test.com                                              
+      PGADMIN_DEFAULT_PASSWORD: 123  
