@@ -61,14 +61,41 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
     let data = Arc::new(Mutex::new(IslandsStore { data: HashMap::new() }));
 
-    use crate::schema::islands::dsl::*;
+    use schema::islands;
+    use serde::Deserialize;
+    use diesel::prelude::*;
+    use uuid::Uuid;
+    use diesel::dsl::{insert_into};
 
     let connection = establish_connection();
-    let results = islands
-        .select((id, owner_id))
-        .limit(5)
-        .load::<IslandDb>(&connection)
-        .expect("Error loading posts");
+
+    #[derive(Deserialize, Insertable)]
+    #[table_name = "islands"]
+    struct NewIslandRow {
+        id: Uuid,
+        owner_id: Uuid,
+        name: String,
+        is_active: bool,
+    }
+
+    let island_row = NewIslandRow {
+        id: Uuid::new_v4(),
+        owner_id: Uuid::new_v4(),
+        name: "Yoshi's Island".into(),
+        is_active: true,
+    };
+    
+    use crate::schema::islands::dsl::{islands as islands_dsl};
+    insert_into(islands_dsl).values(&island_row).execute(&connection).unwrap();
+
+    {
+        use crate::schema::islands::dsl::{islands, id, owner_id};
+        let results = islands
+            .select((id, owner_id))
+            .limit(5)
+            .load::<IslandDb>(&connection)
+            .expect("Error loading islands");
+    }
     
     // by doing data.clone() we're cloning a pointer
     HttpServer::new(move || App::new().wrap(Logger::default()).route("/islands", web::post().to(post_island_request_handler)).data(data.clone()))
