@@ -2,7 +2,7 @@ use serde::Deserialize;
 use uuid::Uuid;
 
 #[derive(Clone, Debug)]
-struct Name(String);
+pub struct Name(String);
 
 impl Name {
     fn new(name: String) -> Result<Self, String> {
@@ -14,12 +14,20 @@ impl Name {
     }
 }
 
+// implementation of the Into trait for the Name struct
+// Into is the general conversion trait, the opposite direction is done with the From trait
+impl Into<String> for Name {
+    fn into(self) -> String {
+        self.0
+    }  
+}
+
 #[derive(Clone, Debug)]
 pub struct Island {
     pub id: Uuid,
-    owner_id: Uuid,
-    name: Name,
-    is_active: bool,
+    pub owner_id: Uuid,
+    pub name: Name,
+    pub is_active: bool,
 }
 
 impl Island {

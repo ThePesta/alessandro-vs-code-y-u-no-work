@@ -18,7 +18,7 @@ path = "src/in_memory_db_main.rs"
 [dependencies]
 actix-rt = "*"
 actix-web = "2.0"
-diesel = { version = "*", features = ["postgres", "uuidv07"] }
+diesel = { version = "*", features = ["postgres", "uuidv07", "r2d2"] }
 env_logger = "*"
 postgres = "0.17.2"
 proptest = "*"
