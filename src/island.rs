@@ -1,6 +1,10 @@
 use serde::Deserialize;
 use uuid::Uuid;
 
+pub trait IslandRepository {
+    fn save(&self, island: Island) -> Result<(), Box<dyn std::error::Error>>;
+}
+
 #[derive(Clone, Debug)]
 pub struct Name(String);
 
@@ -19,7 +23,7 @@ impl Name {
 impl Into<String> for Name {
     fn into(self) -> String {
         self.0
-    }  
+    }
 }
 
 #[derive(Clone, Debug)]
