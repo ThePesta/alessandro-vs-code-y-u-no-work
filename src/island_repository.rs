@@ -1,37 +1,41 @@
 use uuid::Uuid;
-use serde::{Serialize, Deserialize};
+use serde::Deserialize;
 
 use crate::island::{IslandRepository, Island};
 use crate::Pool;
 use crate::schema;
 
 use schema::islands;
+use diesel::RunQueryDsl;
 use diesel::dsl::{insert_into};
 use schema::islands::dsl::{islands as islands_dsl};
 
-struct IslandRepositoryPostgres {
-    connection_pool: Pool
+#[derive(Clone)]
+pub struct IslandRepositoryPostgres {
+    pub connection_pool: Pool
 }
 
 impl IslandRepository for IslandRepositoryPostgres {
-    fn save(&self, island: Island) {
+    fn save(&self, island: &Island) -> Result<(), Box<dyn std::error::Error>> {
 
       #[derive(Deserialize, Insertable)]
       #[table_name = "islands"]
-      struct NewIslandRow {
+      struct NewIslandRow<'a> {
           id: Uuid,
           owner_id: Uuid,
-          name: String,
+          name: &'a str,
           is_active: bool,
       }
 
       let island_row = NewIslandRow {
           id: island.id,
           owner_id: island.owner_id,
-          name: island.name.into(),
+          name: island.name.as_ref(),
           is_active: island.is_active,
       };
 
-      insert_into(islands_dsl).values(&island_row).execute(&self.connection_pool.get().unwrap()).unwrap();
+      let connection = self.connection_pool.get()?;
+      insert_into(islands_dsl).values(&island_row).execute(&connection)?;
+      Ok(())
     }
 }
